@@ -2,8 +2,17 @@ require('dotenv').config();
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
 
 const PORT = process.env.PORT || 3000;
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 function sendJson(res, status, data) {
   res.writeHead(status, { 
@@ -11,35 +20,6 @@ function sendJson(res, status, data) {
     'Access-Control-Allow-Origin': '*'
   });
   res.end(JSON.stringify(data));
-}
-
-async function sendViaBrevo(subject, text) {
-  const apiKey = process.env.BREVO_API_KEY || process.env.SMTP_PASS;
-  const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
-  const toEmail = process.env.EMAIL_TO || 'andreygasheka@gmail.com';
-
-  const body = JSON.stringify({
-    sender: { name: 'Hegau Büroservice', email: fromEmail },
-    to: [{ email: toEmail }],
-    subject,
-    textContent: text
-  });
-
-  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
-    method: 'POST',
-    headers: {
-      'accept': 'application/json',
-      'api-key': apiKey,
-      'content-type': 'application/json'
-    },
-    body
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error('Brevo API: ' + res.status + ' ' + err);
-  }
-  return res.json();
 }
 
 const server = http.createServer((req, res) => {
@@ -73,8 +53,14 @@ const server = http.createServer((req, res) => {
           'Время: ' + new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Berlin' })
         ].join('\n');
 
-        console.log('Отправка через Brevo API...');
-        await sendViaBrevo('Новая заявка — Hegau Büroservice', text);
+        console.log('Отправка через Gmail...');
+        await transporter.sendMail({
+          from: `"Hegau Büroservice" <${process.env.EMAIL_USER}>`,
+          to: process.env.EMAIL_TO || process.env.EMAIL_USER,
+          subject: 'Новая заявка — Hegau Büroservice',
+          text
+        });
+
         console.log('✅ Отправлено');
         return sendJson(res, 200, { success: true });
       } catch (err) {
@@ -100,5 +86,5 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Сервер на порту ${PORT}`);
-  console.log('API key:', (process.env.BREVO_API_KEY || process.env.SMTP_PASS) ? 'задан' : 'НЕТ');
+  console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'задан' : 'НЕТ');
 });
