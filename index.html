@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hegau Büroservice — бюро-сервис в Singen и Landkreis Konstanz</title>
+<meta name="description" content="Помощь с документами, видом на жительство, жильём и страховкой в Singen и Landkreis Konstanz. Радиус до 200 км. Скоро открытие.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232c8570'/><text x='50' y='68' font-size='60' font-family='system-ui' font-weight='700' text-anchor='middle' fill='white'>H</text></svg>">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  colors: { ink: '#1d2a3a', brand: { DEFAULT: '#2c8570', dark: '#246f5d', soft: '#e2f2ec' } },
+  fontFamily: { sans: ['ui-rounded', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'] }
+} } };
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { background-color: #f5f8f6; background-repeat: no-repeat; background-image:
+    radial-gradient(800px 420px at 90% -5%, rgba(160,222,198,.45), transparent 65%),
+    radial-gradient(700px 400px at -5% 8%, rgba(200,214,250,.45), transparent 65%),
+    radial-gradient(700px 380px at 60% 100%, rgba(253,224,204,.4), transparent 65%); }
+  .card { background: #fff; border: 1px solid #e3eae6; box-shadow: 0 10px 30px -18px rgba(29,42,58,.25); }
+  .nav a.active { color: #23735f; background: #e2f2ec; }
+  .prose h2 { font-size: 1.5rem; font-weight: 700; margin: 1.5rem 0 0.75rem; color: #1d2a3a; }
+  .prose h3 { font-size: 1.15rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: #1d2a3a; }
+  .prose p, .prose li { margin-bottom: 0.6rem; line-height: 1.6; color: #334155; }
+  .prose ul { list-style: disc; padding-left: 1.25rem; margin-bottom: 0.75rem; }
+  .step { display: none; }
+  .step.active { display: block; }
+</style>
+</head>
+<body class="text-ink font-sans">
+
+<div class="bg-brand text-white text-center py-2.5 text-sm font-medium">
+  Скоро открываемся — оставьте заявку, мы свяжемся с вами в первую очередь
+</div>
+
+<header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
+  <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="#/" class="flex items-center gap-2 font-bold text-lg">
+      <span class="w-9 h-9 rounded-xl bg-brand text-white flex items-center justify-center text-xl">H</span>
+      <span>Hegau Büroservice</span>
+    </a>
+    <nav class="nav hidden sm:flex gap-1 text-sm">
+      <a href="#/" class="px-3 py-1.5 rounded-lg">Главная</a>
+      <a href="#/quiz" class="px-3 py-1.5 rounded-lg">Заявка</a>
+      <a href="#/impressum" class="px-3 py-1.5 rounded-lg">Impressum</a>
+      <a href="#/datenschutz" class="px-3 py-1.5 rounded-lg">Datenschutz</a>
+    </nav>
+  </div>
+</header>
+
+<main id="app" class="max-w-5xl mx-auto px-4 py-8"></main>
+
+<footer class="border-t border-slate-200 mt-16 py-6 text-center text-sm text-slate-500">
+  <div class="flex justify-center gap-4 mb-2">
+    <a href="#/impressum" class="hover:underline">Impressum</a>
+    <a href="#/datenschutz" class="hover:underline">Datenschutz</a>
+  </div>
+  <div>© <span id="year"></span> Hegau Büroservice · Singen · Landkreis Konstanz</div>
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const app = $('app');
+
+const pages = {
+  home: `
+    <section class="text-center py-8">
+      <div class="inline-block px-3 py-1 rounded-full bg-brand-soft text-brand text-sm font-medium mb-4">Singen · Landkreis Konstanz · до 200 км</div>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">Помощь с документами и ведомствами</h1>
+      <p class="text-lg text-slate-600 max-w-2xl mx-auto mb-6">Вид на жительство, жильё, работа, страховка, переводчик и сроки получения ПМЖ. Организационная помощь без юридических консультаций.</p>
+      <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 max-w-xl mx-auto mb-6 text-sm">
+        Скоро запускаемся. Оставьте заявку — свяжемся с вами в числе первых.
+      </div>
+      <a href="#/quiz" class="inline-block bg-brand hover:bg-brand-dark text-white font-medium px-6 py-3 rounded-xl">Оставить заявку</a>
+    </section>
+
+    <section class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+      <div class="card rounded-2xl p-5"><h3 class="font-semibold mb-2">Вид на жительство</h3><p class="text-sm text-slate-600">Продление, смена параграфа, легализация.</p></div>
+      <div class="card rounded-2xl p-5"><h3 class="font-semibold mb-2">Жильё</h3><p class="text-sm text-slate-600">Папка документов для арендодателя.</p></div>
+      <div class="card rounded-2xl p-5"><h3 class="font-semibold mb-2">Работа</h3><p class="text-sm text-slate-600">Резюме и сопроводительные письма.</p></div>
+      <div class="card rounded-2xl p-5"><h3 class="font-semibold mb-2">Страховка</h3><p class="text-sm text-slate-600">Машина и водительский стаж.</p></div>
+      <div class="card rounded-2xl p-5"><h3 class="font-semibold mb-2">Переводчик</h3><p class="text-sm text-slate-600">Сопровождение на приём в ведомство.</p></div>
+      <div class="card rounded-2xl p-5"><h3 class="font-semibold mb-2">Подтверждение диплома</h3><p class="text-sm text-slate-600">Помощь с признанием квалификации.</p></div>
+    </section>
+
+    <section class="mt-12">
+      <h2 class="text-2xl font-bold mb-4">Частые вопросы</h2>
+      <div class="space-y-3">
+        <details class="card rounded-xl p-4"><summary class="font-medium cursor-pointer">Вы даёте юридические консультации?</summary><p class="mt-2 text-sm text-slate-600">Нет. Мы помогаем с организацией документов и походами в ведомства.</p></details>
+        <details class="card rounded-xl p-4"><summary class="font-medium cursor-pointer">В каких городах работаете?</summary><p class="mt-2 text-sm text-slate-600">Singen, Landkreis Konstanz и в радиусе до 200 км.</p></details>
+        <details class="card rounded-xl p-4"><summary class="font-medium cursor-pointer">Когда откроетесь?</summary><p class="mt-2 text-sm text-slate-600">В ближайшее время. Оставьте заявку — напишем вам первыми.</p></details>
+      </div>
+    </section>
+  `,
+
+  quiz: `
+    <div class="max-w-lg mx-auto">
+      <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 mb-4 text-sm text-center">
+        Скоро запускаемся — заявки уже принимаем
+      </div>
+      <div class="card rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-1">Оставить заявку</h2>
+        <p class="text-sm text-slate-500 mb-5">Ответьте на несколько вопросов</p>
+        
+        <form id="quizForm">
+          <div class="step active space-y-4" data-step="1">
+            <div>
+              <label class="block text-sm font-medium mb-1">Имя</label>
+              <input name="name" required class="w-full border rounded-lg px-3 py-2" placeholder="Ваше имя">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Город и PLZ</label>
+              <input name="region" required class="w-full border rounded-lg px-3 py-2" placeholder="Например: 78224 Singen">
+            </div>
+            <button type="button" class="next w-full bg-brand text-white py-2.5 rounded-xl">Далее</button>
+          </div>
+
+          <div class="step space-y-4" data-step="2">
+            <div>
+              <label class="block text-sm font-medium mb-1">Услуга</label>
+              <select name="category" required class="w-full border rounded-lg px-3 py-2">
+                <option value="">Выберите</option>
+                <option>Вид на жительство / легализация</option>
+                <option>Поиск квартиры</option>
+                <option>Резюме и работа</option>
+                <option>Страховка на машину</option>
+                <option>Переводчик / сопровождение</option>
+                <option>Подтверждение диплома</option>
+                <option>Другое</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Срочность</label>
+              <select name="urgency" class="w-full border rounded-lg px-3 py-2">
+                <option>Обычная</option>
+                <option>Срочно</option>
+              </select>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" class="prev flex-1 border py-2.5 rounded-xl">Назад</button>
+              <button type="button" class="next flex-1 bg-brand text-white py-2.5 rounded-xl">Далее</button>
+            </div>
+          </div>
+
+          <div class="step space-y-4" data-step="3">
+            <div>
+              <label class="block text-sm font-medium mb-1">Как связаться</label>
+              <select name="contactMethod" class="w-full border rounded-lg px-3 py-2">
+                <option>Telegram</option>
+                <option>WhatsApp</option>
+                <option>Телефон</option>
+                <option>Email</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Контакт</label>
+              <input name="contactValue" required class="w-full border rounded-lg px-3 py-2" placeholder="+49... или @username">
+            </div>
+            <div class="flex gap-2">
+              <button type="button" class="prev flex-1 border py-2.5 rounded-xl">Назад</button>
+              <button type="submit" class="flex-1 bg-brand text-white py-2.5 rounded-xl">Отправить</button>
+            </div>
+          </div>
+        </form>
+        <div id="success" class="hidden text-center py-10 text-brand font-medium text-lg">Заявка отправлена!<br><span class="text-sm font-normal text-slate-600">Мы свяжемся с вами.</span></div>
+      </div>
+    </div>
+  `,
+
+  impressum: `
+    <div class="prose max-w-2xl mx-auto">
+      <h2>Impressum</h2>
+      <p><strong>Hegau Büroservice</strong><br>Andrii Havryschenko<br>Freiheitstrasse 59<br>78224 Singen</p>
+      <p><strong>Kontakt</strong><br>E-Mail: andriihavryschenko@gmail.com</p>
+      <p><strong>Angaben gemäß § 5 DDG</strong><br>Andrii Havryschenko<br>Freiheitstrasse 59<br>78224 Singen</p>
+      <p><strong>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</strong><br>Andrii Havryschenko<br>Freiheitstrasse 59<br>78224 Singen</p>
+    </div>
+  `,
+
+  datenschutz: `
+    <div class="prose max-w-2xl mx-auto">
+      <h2>Datenschutzerklärung</h2>
+      <h3>1. Verantwortlicher</h3>
+      <p>Andrii Havryschenko<br>Freiheitstrasse 59<br>78224 Singen<br>E-Mail: andriihavryschenko@gmail.com</p>
+      <h3>2. Welche Daten wir erheben</h3>
+      <p>Wenn Sie das Kontaktformular auf der Website nutzen, erheben wir folgende Daten:</p>
+      <ul><li>Name</li><li>Kontakt (Telefon, Telegram, WhatsApp oder E-Mail)</li><li>Inhalt Ihrer Nachricht / Anfrage</li></ul>
+      <h3>3. Zweck der Datenverarbeitung</h3>
+      <p>Die Daten werden ausschließlich verwendet, um auf Ihre Anfrage zu antworten und die gewünschte Dienstleistung zu erbringen.</p>
+      <h3>4. Rechtsgrundlage</h3>
+      <p>Art. 6 Abs. 1 lit. b DSGVO (Vertrag / vorvertragliche Maßnahmen) und Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Beantwortung von Anfragen).</p>
+      <h3>5. Speicherdauer</h3>
+      <p>Die Daten werden gelöscht, sobald sie für die Zweckerfüllung nicht mehr erforderlich sind und keine gesetzlichen Aufbewahrungspflichten entgegenstehen.</p>
+      <h3>6. Ihre Rechte</h3>
+      <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch.<br>Zur Ausübung Ihrer Rechte genügt eine E-Mail an andriihavryschenko@gmail.com.</p>
+      <h3>7. Beschwerderecht</h3>
+      <p>Sie haben das Recht, sich bei einer Datenschutzaufsichtsbehörde zu beschweren.</p>
+    </div>
+  `
+};
+
+function showPage() {
+  const hash = location.hash || '#/';
+  const page = hash.replace('#/', '') || 'home';
+  app.innerHTML = pages[page] || pages.home;
+  document.querySelectorAll('.nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === hash || (hash === '#/' && a.getAttribute('href') === '#/')));
+  if (page === 'quiz') initQuiz();
+}
+
+function initQuiz() {
+  const form = $('quizForm');
+  if (!form) return;
+  let current = 1;
+  const steps = form.querySelectorAll('.step');
+
+  function go(n) {
+    steps.forEach(s => s.classList.remove('active'));
+    form.querySelector('[data-step="'+n+'"]').classList.add('active');
+    current = n;
+  }
+
+  form.querySelectorAll('.next').forEach(btn => {
+    btn.onclick = () => {
+      const step = form.querySelector('.step.active');
+      const inputs = step.querySelectorAll('[required]');
+      let ok = true;
+      inputs.forEach(i => { if (!i.value.trim()) ok = false; });
+      if (ok) go(current + 1);
+    };
+  });
+  form.querySelectorAll('.prev').forEach(btn => {
+    btn.onclick = () => go(current - 1);
+  });
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    const oldText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Отправляем…';
+    const fd = new FormData(form);
+    const payload = Object.fromEntries(fd.entries());
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+    try {
+      const res = await fetch('/api/submit-quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success !== false) {
+        form.classList.add('hidden');
+        $('success').classList.remove('hidden');
+      } else {
+        alert('Ошибка: ' + (data.error || 'сервер вернул ' + res.status));
+        btn.disabled = false;
+        btn.textContent = oldText;
+      }
+    } catch (err) {
+      clearTimeout(timeout);
+      alert(err.name === 'AbortError' ? 'Таймаут. Сервер не ответил.' : 'Ошибка соединения.');
+      btn.disabled = false;
+      btn.textContent = oldText;
+    }
+  };
+}
+
+window.addEventListener('hashchange', showPage);
+showPage();
+$('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
