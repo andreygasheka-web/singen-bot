@@ -2,17 +2,10 @@ require('dotenv').config();
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const nodemailer = require('nodemailer');
 
 const PORT = process.env.PORT || 3000;
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 function sendJson(res, status, data) {
   res.writeHead(status, { 
@@ -20,6 +13,23 @@ function sendJson(res, status, data) {
     'Access-Control-Allow-Origin': '*'
   });
   res.end(JSON.stringify(data));
+}
+
+async function sendToTelegram(text) {
+  if (!TOKEN || !CHAT_ID) throw new Error('Нет TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID');
+  const url = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: CHAT_ID,
+      text: text,
+      parse_mode: 'HTML'
+    })
+  });
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.description || 'Telegram error');
+  return data;
 }
 
 const server = http.createServer((req, res) => {
@@ -41,27 +51,21 @@ const server = http.createServer((req, res) => {
         const clip = v => (v || '').toString().slice(0, 500);
 
         const text = [
-          'Новая заявка с сайта Hegau Büroservice',
-          '----------------------------------------',
+          '<b>Новая заявка — Hegau Büroservice</b>',
+          '',
           'Имя: ' + (clip(data.name) || '—'),
           'Город: ' + (clip(data.region) || '—'),
           'Услуга: ' + (clip(data.category) || '—'),
           'Срочность: ' + (clip(data.urgency) || '—'),
           'Способ связи: ' + (clip(data.contactMethod) || '—'),
           'Контакт: ' + (clip(data.contactValue) || '—'),
-          '----------------------------------------',
+          '',
           'Время: ' + new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Berlin' })
         ].join('\n');
 
-        console.log('Отправка через Gmail...');
-        await transporter.sendMail({
-          from: `"Hegau Büroservice" <${process.env.EMAIL_USER}>`,
-          to: process.env.EMAIL_TO || process.env.EMAIL_USER,
-          subject: 'Новая заявка — Hegau Büroservice',
-          text
-        });
-
-        console.log('✅ Отправлено');
+        console.log('Отправка в Telegram...');
+        await sendToTelegram(text);
+        console.log('✅ Отправлено в Telegram');
         return sendJson(res, 200, { success: true });
       } catch (err) {
         console.error('❌', err.message);
@@ -86,5 +90,5 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Сервер на порту ${PORT}`);
-  console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'задан' : 'НЕТ');
+  console.log('Telegram:', TOKEN ? 'токен задан' : 'НЕТ ТОКЕНА');
 });
